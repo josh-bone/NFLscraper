@@ -1,4 +1,6 @@
 # Directory Structure 
+
+```
 NFLscraper
 ├── LICENSE
 ├── NFLscraper
@@ -6,3 +8,4 @@ NFLscraper
 |   ├── utility.py
 ├── README.md
 └── setup.py
+```
