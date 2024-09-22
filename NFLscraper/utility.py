@@ -15,7 +15,14 @@ def year_schedule(year:int):
     url = f'https://www.pro-football-reference.com/years/{year}/games.htm'
     resp = pd.read_html(url)
     assert len(resp) == 1, "Unexpected iterable length"
-    return resp[0]
+    df = resp[0]
+    
+    # Add a column to determine the home team
+    winnerIsAway = df['Unnamed: 5'] == "@"
+    hometeam = df['Winner/tie'] * winnerIsAway + df['Loser/tie'] * df['Unnamed: 5'].isna()
+    df['Home Team'] = hometeam   # Add the column to dataframe
+
+    return df
 
 def week_schedule(year:int, week:int) -> pd.DataFrame:
     year_sched = year_schedule(year)
