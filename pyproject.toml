@@ -1,0 +1,54 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "NFLscraper"
+version = "0.0.0"
+description = "Scrape data from pro-football-reference.com"
+readme = "README.md"
+authors = [{ name = "Joshua Bone", email = "jbone.data@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["feed", "reader", "tutorial"]
+dependencies = [
+    "numpy >= 2.1.1",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["requests_cache"]
+
+[project.urls]
+Homepage = "https://github.com/josh-bone/NFLscraper"
+[tool.bumpver]
+current_version = "0.0.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+]
+"setup.py" = [
+    "{version}",
+    "{pep440_version}",
+]
+"README.md" = [
+    "{version}",
+    "{pep440_version}",
+]
+
