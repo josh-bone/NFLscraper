@@ -1,9 +1,10 @@
 import pandas as pd
 import requests
+from io import StringIO
 
 try:
     import requests_cache
-    requests_cache.install_cache("my_cache", expire_after=7*86400) # cache any requests for 1 week
+    requests_cache.install_cache("scraper_cache", expire_after=2*86400) # cache any requests for 2 days
 except ImportError:
     print("Warning: requests-cache not installed, NOT using cache") 
 
@@ -26,8 +27,9 @@ def team_schedule(teamcode:str, year:int) -> pd.DataFrame:
         year (int): The season to get a schedule for
     """    
     url = f'https://www.pro-football-reference.com/teams/{teamcode}/{year}.htm'  # To get the schedule of one team
-    resp = pd.read_html(get_text(url))
-    df = resp[1]
+    resp = get_text(url)
+    df = pd.read_html(StringIO(resp))
+    df = df[1]
     
     return df
 
@@ -41,9 +43,10 @@ def year_schedule(year:int) -> pd.DataFrame:
         pd.DataFrame: A row for every game
     """    
     url = f'https://www.pro-football-reference.com/years/{year}/games.htm'
-    resp = pd.read_html(get_text(url))
-    assert len(resp) == 1, "Unexpected iterable length"
-    df = resp[0]
+    resp = get_text(url)
+    df = pd.read_html(StringIO(resp))
+    assert len(df) == 1, "Unexpected iterable length"
+    df = df[0]
     
     # Drop the rows that repeat column indices
     df = df[df['Week'] != 'Week']
@@ -58,8 +61,8 @@ def year_schedule(year:int) -> pd.DataFrame:
     
     # Add columns for Home Team and Away Team
     winnerIsAway = df['Unnamed: 5'] == "@"
-    hometeam = df['Winner/tie'] * winnerIsAway + df['Loser/tie'] * df['Unnamed: 5'].isna() + df['Winner/tie'] * df['Neutral Site']
-    awayteam = df['Winner/tie'] * df['Unnamed: 5'].isna() + df['Loser/tie'] * winnerIsAway + df['Loser/tie'] * df['Neutral Site']
+    awayteam = df['Winner/tie'] * winnerIsAway + df['Loser/tie'] * df['Unnamed: 5'].isna() + df['Winner/tie'] * df['Neutral Site']
+    hometeam = df['Winner/tie'] * df['Unnamed: 5'].isna() + df['Loser/tie'] * winnerIsAway + df['Loser/tie'] * df['Neutral Site']
     df['Home Team'] = hometeam   
     df['Away Team'] = awayteam
     
